@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "feedparser": "^1.1.4",
+    "lodash": "^4.4.0",
     "sqlite3": "^3.1.1"
   }
 }
