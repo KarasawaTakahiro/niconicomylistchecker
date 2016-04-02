@@ -57,7 +57,7 @@ client.allWatchedMylistList = function(){
                     <a href="/feed/${feed_id}">${feed_title}</a>\
                 </div>\
                 <div class="feed-unpull">\
-                    <a class="unpull" href="#" name="${feed_id}"><span class="glyphicon glyphicon-remove"></span></a>\
+                    <a class="unpull" href="#" name="${feed_id}"><i class="icon-remove-sign"></i></a>\
                 </div>\
             </div>';
         var html;
@@ -86,7 +86,7 @@ client.movieList = function movieList(feed_id){
                     ${a_tag}\
                 </li>\
                 <li class="pubDate">${item_posted_at}</li>\
-                <li class="mark link-panel"><a href="#" onclick="autoMark(${item_feed_id}, ${item_id})"><span class="glyphicon glyphicon-${direction}load" title="ここまで見た！"></a></li>\
+                <li class="mark link-panel"><a href="#" onclick="autoMark(${item_feed_id}, ${item_id})"><i class="icon-${direction}load" title="ここまで見た！"></i></a></li>\
             </ul>';
 
         var a_unwatch = '<a class="unread" id="${item_id}" href="${item_link}" target="_blank" onclick="mark_read(this, ${item_id})">${item_title}</a>';
