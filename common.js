@@ -127,7 +127,6 @@ common.movieList = function movieList(feed_id, cb){
      *  0の場合はマイリスト横断で未視聴動画を取得する
      * cb(動画データ)
      */
-    var movie = constants.template.MOVIE;
 
     if(feed_id == 0){   // 全マイリスト通しての未視聴動画一覧
         db.unwatch_movies(function(err, row){
@@ -140,6 +139,7 @@ common.movieList = function movieList(feed_id, cb){
     }
 
     function shaping(row){      // データを整形してCBを呼び出す
+        var movie = Object.assign({}, constants.template.MOVIE);
         movie.title = row.title;
         movie.link = constants.url.WATCH_FRONT + row.movieid + constants.url.WATCH_BACK;
         movie.posted_at = new Date(row.posted_at);

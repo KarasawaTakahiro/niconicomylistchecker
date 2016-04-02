@@ -4,6 +4,9 @@
  * クライアントのviewの操作を行う
  */
 
+var util = require("./lib/util");
+
+
 var client = {};
 
 
@@ -69,7 +72,46 @@ client.allWatchedMylistList = function(){
     };
 };
 
+client.movieList = function movieList(feed_id){
+    var inserted_dom = document.getElementById("list_body");
+    var base_html;                                      // 雛形HTML
 
+    common.movieList(feed_id, cb_movieList);
+
+    // 未視聴動画を持つフィードを得たした時の動作
+    function cb_movieList(movie){
+        base_html = '\
+            <ul class="list-inline">\
+                <li class="title link-panel">\
+                    ${a_tag}\
+                </li>\
+                <li class="pubDate">${item_posted_at}</li>\
+                <li class="mark link-panel"><a href="#" onclick="autoMark(${item_feed_id}, ${item_id})"><span class="glyphicon glyphicon-${direction}load" title="ここまで見た！"></a></li>\
+            </ul>';
+
+        var a_unwatch = '<a class="unread" id="${item_id}" href="${item_link}" target="_blank" onclick="mark_read(this, ${item_id})">${item_title}</a>';
+        var a_watched = '<a class="read" id="${item_id}" href="${item_link}" target="_blank">${item_title}</a>';
+        var a_tag;
+        var direction;
+        var html;
+        var tmp_elem = document.createElement("div");           // innnerHTMLを使うための一時DOM
+
+        // タイトル部分を決める
+        a_tag = movie.watched ? a_watched : a_unwatch;
+        html = util.sprintf(base_html, {"${a_tag}":a_tag});
+        direction = feed_id ? "down" : "up";                    // 矢印の方向
+        // 値を埋め込む & HTML生成
+        tmp_elem.innerHTML = util.sprintf(html, {
+            "${item_id}":movie.id,
+            "${item_link}":movie.link,
+            "${item_title}":movie.title,
+            "${item_feed_id}":movie.feed_id,
+            "${item_posted_at}":movie.posted_at,
+            "${direction}":direction,
+        });
+        inserted_dom.appendChild(tmp_elem.firstElementChild);   // 必要なのは中身だけ
+    };
+};
 
 
 module.exports = client;
