@@ -119,4 +119,36 @@ common.allWatchedFeedList = function allWatchedFeedList(cb){
     };
 };
 
+
+// 動画一覧のデータを取得&整形
+common.movieList = function movieList(feed_id, cb){
+    /*
+     * feed_id
+     *  0の場合はマイリスト横断で未視聴動画を取得する
+     * cb(動画データ)
+     */
+    var movie = constants.template.MOVIE;
+
+    if(feed_id == 0){   // 全マイリスト通しての未視聴動画一覧
+        db.unwatch_movies(function(err, row){
+            shaping(row);
+        });
+    }else{              // マイリストごとの未視聴動画一覧
+        db.movies_in_feed(feed_id, function(err, row){
+            shaping(row);
+        });
+    }
+
+    function shaping(row){      // データを整形してCBを呼び出す
+        movie.title = row.title;
+        movie.link = constants.url.WATCH_FRONT + row.movieid + constants.url.WATCH_BACK;
+        movie.posted_at = new Date(row.posted_at);
+        movie.thumbnail = row.thumbnail;
+        movie.description = row.description;
+        movie.watched = row.watched;
+        cb(movie);
+    }
+
+};
+
 module.exports = common;
