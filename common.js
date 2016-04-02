@@ -68,7 +68,8 @@ common.rmFeed = function rmFeed(feed_id){
     db.del_feed_recursively(feed_id);
 };
 
-// フィードリストに表示するデータを取得&整形
+
+// 新着動画ありに表示するデータを取得&整形
 common.unwatchFeedList = function unwatchFeedList(cb){
     /*
      * db(feed_data)
@@ -86,6 +87,31 @@ common.unwatchFeedList = function unwatchFeedList(cb){
                     feed.id = row.id;
                     feed.title = row.title;
                     feed.unwatch_movie_num = num;
+                    cb(feed);
+                }
+            });
+        }
+    };
+};
+
+
+// フィードリストに表示するデータを取得&整形
+common.allWatchedFeedList = function allWatchedFeedList(cb){
+    /*
+     * db(feed_data)
+     */
+    var feeds = [];
+    var feed;
+
+    db.mylists(cb_feeds);
+
+    function cb_feeds(err, row){
+        if(!err){
+            db.unwatched_movie_num_at_feed(row.id, function(unwatch_num){
+                if(unwatch_num == 0){
+                    feed = Object.assign({}, constants.template.FEEDLIST);
+                    feed.id = row.id;
+                    feed.title = row.title;
                     cb(feed);
                 }
             });
