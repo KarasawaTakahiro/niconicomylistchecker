@@ -3,9 +3,12 @@
  * フロントからはここの関数を呼び出す
  */
 
+var remote = require("remote");
+
+var db = remote.require("./lib/database");
+var rss = remote.require("./lib/rss");
+
 var constants = require("./lib/constants");
-var db = require("./lib/database");
-var rss = require("./lib/rss");
 var util = require("./lib/util");
 
 var common = {};
