@@ -27,6 +27,8 @@ window.onload = function(){
     common.bind_my_funcs();
 
     assembler.loadAndInnerHtml(document.getElementById("frame_left"),
+    // HTML構成
+    assembler.loadAndInnerHtmlSync(document.getElementById("frame_left"),
             "./view/parts/feed_list.html", function(err){
                 console.log(err);
             });
@@ -36,14 +38,17 @@ window.onload = function(){
                 console.log(err);
             });
 
-    assembler.loadAndInnerHtml(document.getElementById("frame_bottom"),
+    assembler.loadAndInnerHtmlSync(document.getElementById("frame_bottom"),
             "./view/parts/toolbox.html", function(err){
                 console.log(err);
             });
 
-    assembler.loadAndInnerHtml(document.getElementById("dashboard"),
+    assembler.loadAndInnerHtmlSync(document.getElementById("dashboard"),
             "./view/parts/feed_contents.html", function(err){
                 console.log(err);
             });
 
+    // bind
+    require("../front/toolbox").bind();
 };
+
