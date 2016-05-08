@@ -31,7 +31,7 @@ window.onload = function(){
                 console.log(err);
             });
 
-    assembler.loadAndInnerHtml(document.getElementById("frame_right"),
+    assembler.loadAndInnerHtmlSync(document.getElementById("frame_right"),
             "./view/parts/dashboard.html", function(err){
                 console.log(err);
             });
@@ -40,4 +40,10 @@ window.onload = function(){
             "./view/parts/toolbox.html", function(err){
                 console.log(err);
             });
+
+    assembler.loadAndInnerHtml(document.getElementById("dashboard"),
+            "./view/parts/feed_contents.html", function(err){
+                console.log(err);
+            });
+
 };
