@@ -1,6 +1,10 @@
 'use strict';
 
 var electron = require('electron');
+
+var db = require("./lib/database");
+var constants = require("./lib/constants");
+
 var app = electron.app;
 var BrowserWindow = electron.BrowserWindow;
 
@@ -14,10 +18,15 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
+    // 画面生成
     mainWindow = new BrowserWindow({width:1300, height:500});
+    // トップページ表示
     mainWindow.loadURL('file://' + __dirname + '/view/index.html');
-
     mainWindow.webContents.openDevTools();
+
+    // DBの初期化処理
+    db.init(constants.DB_NAME);
+    db.construct();
 
     mainWindow.on('closed', function() {
         mainWindow = null;

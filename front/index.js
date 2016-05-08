@@ -5,14 +5,10 @@ var remote = require('remote');
 var client = require("../front/client");
 var common = require("../front/common");
 
-var db = remote.require("./lib/database");
 var constants = remote.require("./lib/constants");
 
 
 var init = function(){
-    db.init(constants.DB_NAME);
-    db.construct();
-    console.log("initilized");
 }
 
 init();
