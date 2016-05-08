@@ -8,8 +8,8 @@ var remote = require("remote");
 var db = remote.require("./lib/database");
 var rss = remote.require("./lib/rss");
 
-var constants = require("./lib/constants");
-var util = require("./lib/util");
+var constants = require("../lib/constants");
+var util = require("../lib/util");
 
 var common = {};
 
@@ -152,6 +152,26 @@ common.movieList = function movieList(feed_id, cb){
         cb(movie);
     }
 
+};
+
+
+// PULL
+common.pull = function pull(){
+    var textbox = document.getElementById("new-feed-url");
+    var url;
+
+    url = textbox.value;
+    this.reg_new_feed(url);
+};
+
+// bind
+common.bind_my_funcs = function bind_my_funcs(){
+    var parent_obj = this;
+
+    // PULLボタン
+    document.getElementById("pull_btn").onclick = function(){
+        parent_obj.pull();
+    };
 };
 
 module.exports = common;
