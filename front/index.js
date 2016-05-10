@@ -9,24 +9,14 @@ var assembler = require("../front/assembler");
 var constants = remote.require("./lib/constants");
 
 
-var init = function(){
-}
-
-init();
-
-
-// var test = remote.require("./lib/test");
-// test.set();
-
 window.onload = function(){
     console.log("onload");
-    client.unwatch_mylist_list();
-    client.allWatchedMylistList();
-    client.movieList(0);
+    // client.unwatch_mylist_list();
+    // client.allWatchedMylistList();
+    // client.movieList(0);
+    //
+    // common.bind_my_funcs();
 
-    common.bind_my_funcs();
-
-    assembler.loadAndInnerHtml(document.getElementById("frame_left"),
     // HTML構成
     assembler.loadAndInnerHtmlSync(document.getElementById("frame_left"),
             "./view/parts/feed_list.html", function(err){
@@ -50,5 +40,7 @@ window.onload = function(){
 
     // bind
     require("../front/toolbox").bind();
+    require("../front/feed_list").bind();
+
 };
 

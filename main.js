@@ -19,9 +19,10 @@ app.on('window-all-closed', function() {
 
 app.on('ready', function() {
     // 画面生成
-    mainWindow = new BrowserWindow({width:1300, height:500});
+    mainWindow = new BrowserWindow({width:1300, height:600});
     // トップページ表示
     mainWindow.loadURL('file://' + __dirname + '/view/index.html');
+    // mainWindow.loadURL('file://' + __dirname + '/view/feed.html');
     mainWindow.webContents.openDevTools();
 
     // DBの初期化処理
