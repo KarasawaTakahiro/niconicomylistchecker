@@ -5,6 +5,8 @@
 
 var remote = require("remote");
 
+var async = remote.require("async");
+
 var db = remote.require("./lib/database");
 var constants = remote.require("./lib/constants");
 var rss = remote.require("./lib/rss");
@@ -41,29 +43,39 @@ common.reg_new_feed = function(url, cb){
 };
 
 
-// フィードと同期を取る
+/* フィードと同期を取る
+ * cb_after_reg
+ * cb_after_del
+ */
 common.sync = function(cb_after_reg, cb_after_del){
-    db.mylists(function(err, feed){
-        console.log("mylist: "+feed.title);
-        if(!err){
-            util.mylist.pull(feed.mylistid,
-                    function cb_new_item(movies){
-                        movies.forEach(function(movie){
-                            console.log("new: "+movie.title);
-                            db.reg_movie(movie.movieid, movie.title, movie.posted_at, movie.thumbnail, movie.description, feed.id);
-                        });
-                        cb_after_reg(movies);
-                    }, function cb_del_item(movies){
-                        movies.forEach(function(movie){
-                            console.log("del: "+movie.title);
-                            db.del_movie(movie.movieid, feed.id);
-                        });
-                        cb_after_del(movies);
-                    });
-        }else{
-            console.log("common.pull error: "+err);
-        }
-    });
+    async.series([
+            function(callback){
+                db.mylists(function(err, feed){
+                    console.log("mylist: "+feed.title);
+                    if(!err){
+                        util.mylist.pull(feed.mylistid,
+                                function cb_new_item(movies){
+                                    movies.forEach(function(movie){
+                                        console.log("new: "+movie.title);
+                                        db.reg_movie(movie.movieid, movie.title, movie.posted_at, movie.thumbnail, movie.description, feed.id);
+                                    });
+                                }, function cb_del_item(movies){
+                                    movies.forEach(function(movie){
+                                        console.log("del: "+movie.title);
+                                        db.del_movie(movie.movieid, feed.id);
+                                    });
+                                });
+                    }else{
+                        console.log("common.pull error: "+err);
+                    }
+                });
+                callback();
+            },
+            function(callback){
+                cb_after_reg();
+                cb_after_del();
+            },
+            ]);
 };
 
 
@@ -87,7 +99,6 @@ common.unwatchFeedList = function unwatchFeedList(cb){
     /*
      * db(feed_data)
      */
-    var feeds = [];
     var feed;
 
     db.mylists(cb_feeds);
@@ -96,6 +107,30 @@ common.unwatchFeedList = function unwatchFeedList(cb){
         if(!err){
             db.unwatched_movie_num_at_feed(row.id, function(num){
                 if(0 < num){
+                    feed = Object.assign({}, constants.template.FEEDLIST);
+                    feed.id = row.id;
+                    feed.title = row.title;
+                    feed.unwatch_movie_num = num;
+                    cb(feed);
+                }
+            });
+        }
+    };
+};
+
+// 新着動画なしに表示するデータを取得&整形
+common.watchedFeedList = function watchedFeedList(cb){
+    /*
+     * db(feed_data)
+     */
+    var feed;
+
+    db.mylists(cb_feeds);
+
+    function cb_feeds(err, row){
+        if(!err){
+            db.unwatched_movie_num_at_feed(row.id, function(num){
+                if(num == 0){
                     feed = Object.assign({}, constants.template.FEEDLIST);
                     feed.id = row.id;
                     feed.title = row.title;
