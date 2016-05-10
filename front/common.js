@@ -42,7 +42,7 @@ common.reg_new_feed = function(url, cb){
 
 
 // フィードと同期を取る
-common.sync = function(){
+common.sync = function(cb_after_reg, cb_after_del){
     db.mylists(function(err, feed){
         console.log("mylist: "+feed.title);
         if(!err){
@@ -52,11 +52,13 @@ common.sync = function(){
                             console.log("new: "+movie.title);
                             db.reg_movie(movie.movieid, movie.title, movie.posted_at, movie.thumbnail, movie.description, feed.id);
                         });
+                        cb_after_reg(movies);
                     }, function cb_del_item(movies){
                         movies.forEach(function(movie){
                             console.log("del: "+movie.title);
                             db.del_movie(movie.movieid, feed.id);
                         });
+                        cb_after_del(movies);
                     });
         }else{
             console.log("common.pull error: "+err);
