@@ -6,16 +6,22 @@
 var remote = require("remote");
 
 var db = remote.require("./lib/database");
+var constants = remote.require("./lib/constants");
 var rss = remote.require("./lib/rss");
-
-var constants = require("../lib/constants");
-var util = require("../lib/util");
+var util = remote.require("./lib/util");
 
 var common = {};
 
-// フィードの新規登録
-common.reg_new_feed = function(url){
+/* フィードの新規登録
+ * url:         登録するURL
+ * cb(data):    登録後に実行する関数
+ *              data: templete.FEED
+ */
+common.reg_new_feed = function(url, cb){
     var mylistid = util.url.pick_mylistid(url);
+    if(!mylistid){
+        return;
+    }
     console.log("mylsitid: "+mylistid);
 
     db.feed_from_mylistid(mylistid, function(err, items){
@@ -24,6 +30,7 @@ common.reg_new_feed = function(url){
                 rss.get_mylist_rss(mylistid, function(data){
                     if(util.mylist.is_publication(data)){
                         db.reg_feed(data);
+                        cb(data);
                     }else{ console.log("failed: is not publicated"); }
                 });
             }else{ console.log("failed: already registed"); }
@@ -39,17 +46,18 @@ common.sync = function(){
     db.mylists(function(err, feed){
         console.log("mylist: "+feed.title);
         if(!err){
-            util.mylist.pull(feed.mylistid, function cb_new_item(movies){
-                movies.forEach(function(movie){
-                    console.log("new: "+movie.title);
-                    db.reg_movie(movie.movieid, movie.title, movie.posted_at, movie.thumbnail, movie.description, feed.id);
-                });
-            }, function cb_del_item(movies){
-                movies.forEach(function(movie){
-                    console.log("del: "+movie.title);
-                    db.del_movie(movie.movieid, feed.id);
-                });
-            });
+            util.mylist.pull(feed.mylistid,
+                    function cb_new_item(movies){
+                        movies.forEach(function(movie){
+                            console.log("new: "+movie.title);
+                            db.reg_movie(movie.movieid, movie.title, movie.posted_at, movie.thumbnail, movie.description, feed.id);
+                        });
+                    }, function cb_del_item(movies){
+                        movies.forEach(function(movie){
+                            console.log("del: "+movie.title);
+                            db.del_movie(movie.movieid, feed.id);
+                        });
+                    });
         }else{
             console.log("common.pull error: "+err);
         }
